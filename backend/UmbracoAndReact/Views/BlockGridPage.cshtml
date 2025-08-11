@@ -1,0 +1,223 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.BlockGridPage>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using System.Globalization
+@inject Umbraco.Cms.Core.Services.IContentService ContentService
+@{
+    var rootPage = (OHome)Model.Root();
+    if (rootPage.OContent != null && rootPage.OContent.Id == Model.Id)
+    {
+        Layout = null;
+    }
+    else
+    {
+        Layout = "Main.cshtml";
+    }
+    ViewBag.CurrentPage = Model;
+    ViewBag.ParentPage = Model.Parent;
+    const string ShowAuthorAndReadTimeOption = "Show author and read time";
+    const string ShowSideMenuOption = "Show author and read time";
+    const string ShowSocialsOption = "Show social in post";
+
+    var isInBlogPage = Model.Parent is OBlog;
+
+    var hideFullScreenTopContainer = false;
+
+    var cultureCode = UmbracoContext.PublishedRequest.PublishedContent;
+    string selectedLanguage = "en-us";
+    @foreach (var (culture, infos) in cultureCode.Cultures)
+    {
+        if (cultureCode.GetCultureFromDomains().ToLower().Equals(culture))
+        {
+            selectedLanguage = new CultureInfo(culture).IetfLanguageTag;
+            continue;
+        }
+    }
+    CultureInfo cultureInfo = new CultureInfo(selectedLanguage);
+}
+
+
+
+@if (Model.OShowLeftMenu)
+{
+    var sidebarNode = Model.Parent is BlockGridPage ? Model.Parent : Model;
+    const string FullScreenTopContainerAlias = "oBlockFullScreenTopContainer";
+    var fullScreenContainer = Model.BlogGrid.FirstOrDefault(block => block.Content.ContentType.Alias == FullScreenTopContainerAlias);
+
+    <main class="inner-page">
+        @if (fullScreenContainer != null)
+        {
+            @await Html.PartialAsync("Partials/blockgrid/Components/oBlockFullScreenTopContainer", fullScreenContainer)
+            ViewBag.HideFullScreenTopContainer = true;
+            hideFullScreenTopContainer = true;
+        }
+        <section class="content fullscreen-content">
+            <div class="container">
+                <div class="content__inner">
+                    @await Umbraco.RenderMacroAsync("MenuForAllBlogs",
+                        new
+                        {
+                            oCurrentUrl = Model.Url(),
+                            oParentPage = sidebarNode.Id,
+                            oDisplayCreationDate = false
+                        })
+                    <div class="content-info">
+                        @await Html.GetBlockGridHtmlAsync(Model.BlogGrid)
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+}
+else if (isInBlogPage)
+{
+    var request = Context.Request;
+    var scheme = request.Scheme;
+    var host = request.Host;
+    var path = request.Path;
+    var queryString = request.QueryString;
+    var currentUrl = $"{scheme}://{host}{path}{queryString}";
+
+    var blogPage = (OBlog)Model.Parent;
+    var configBlog = blogPage.ConfigBlog;
+
+    var showSideMenu = configBlog.Any(option => option == ShowSideMenuOption);
+    var showSocials = configBlog.Any(option => option == ShowSocialsOption);
+    ViewBag.ShowAuthorAndReadTime = configBlog.Any(option => option == ShowAuthorAndReadTimeOption);
+    ViewBag.ShareLinks = blogPage.ShareLinks;
+    var previewBlockContent = Model.BlogGrid.FirstOrDefault(b => b.Content.ContentType.Alias == OBlogPostPreviewBlock.ModelTypeAlias)?.Content;
+    var blogPostPreviewBlock = previewBlockContent as OBlogPostPreviewBlock;
+
+    <main class="inner-page" style="display:flex; justify-content: center;">
+        <section class="content blogpost-content">
+            <div class="container">
+                <div class="content__inner">
+                    @if (Model.OShowLeftMenu)
+                    {
+                        @await Html.PartialAsync("oskiPartials/oCategoriesMenuForNews", blogPage)
+                    }
+                    <div class="content-info">
+                        @await Html.GetBlockGridHtmlAsync(Model.BlogGrid)
+                        @if (showSocials && blogPostPreviewBlock != null)
+                        {
+                            @if (blogPostPreviewBlock.OTags.Any())
+                            {
+                                <div class="blogpost-news-item-tags oski-mt-2">
+                                    @foreach (var tag in blogPostPreviewBlock.OTags)
+                                    {
+                                        <a class="blogpost-tag tags-blog" href="@(Model.Parent.Url() + $"?tag={tag}")">@tag</a>
+                                    }
+                                </div>
+                            }
+                            @if (blogPage.ShareLinks.Any())
+                            {                               
+                                <div class="container-shareLinks">
+                                    <h4 class="title-socialLink">@Umbraco.GetDictionaryValueOrDefault("BlogPost.TitleSocialLink", "Don’t forget to share this post!") </h4>
+                                    <div class="blogpost-share-social-container">
+                                        @foreach (SocialLink link in blogPage.ShareLinks.Select(sh => sh.Content as SocialLink))
+                                        {
+                                            var shareLink = link.OUrl.First().Name + currentUrl;
+                                            string onClickEvent = "";
+                                            if (link.OSocialNetworkName == "Copy link")
+                                            {
+                                                onClickEvent = "onclick=navigator.clipboard.writeText(window.location.href);";
+                                                shareLink = null;
+                                            }
+
+                                            <a href="@shareLink" @onClickEvent 
+                                               class="blogpost-share-social-icon"
+                                               title="@(onClickEvent == "" ? $"Share on {link.OSocialNetworkName}" : link.OSocialNetworkName)"
+                                               target="@(link.OUrl.First().Target)"
+                                               style="cursor:pointer;">
+
+                                                @Html.Raw(System.IO.File.ReadAllText("wwwroot" + link.OIcon.Url()))
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+
+                        @if (Model.OLatestArticles != null && Model.OLatestArticles.Any())
+                        {
+                            <div class="latest-articles">
+                                <h4 class="oski-mb-4">@Umbraco.GetDictionaryValueOrDefault("BlogPost.LatestArticlesTitle", "Latest Articles Title")</h4>
+                                <div class="latest-articles-area-container oski-mb-5">
+                                    @foreach (var item in Model.OLatestArticles)
+                                    {
+                                        var udi = item.Udi;
+                                        var content = Umbraco.Content(udi);
+
+                                        void RenderArticle(string title, string description, string url)
+                                        {
+                                            <div class="latest-articles-area">
+                                                <h4><a href="@url" class="latestArticleslink">@title</a></h4>
+                                                <p>@description</p>
+                                            </div>
+                                        }
+
+                                        if (content is Umbraco.Cms.Web.Common.PublishedModels.BlockGridPage blockGridPage)
+                                        {
+                                            var blockGrid = blockGridPage.BlogGrid;
+
+                                            if (blockGrid?.Any() == true)
+                                            {
+                                                var filteredBlocks = blockGrid.Where(b => b.Content.ContentType.Alias == "oBlogPostPreviewBlock");
+
+                                                foreach (var block in filteredBlocks)
+                                                {
+                                                    if (block.Content is Umbraco.Cms.Web.Common.PublishedModels.OBlogPostPreviewBlock blockContent)
+                                                    {
+                                                        RenderArticle(blockContent.OTitle, blockContent.ODescription, item.Url);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else if (content != null)
+                                        {
+                                            var title = content.Value<string>("oTitle");
+                                            var description = content.Value<string>("oDescription");
+                                            RenderArticle(title, description, item.Url);
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        }
+                 
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+}
+else
+{
+    <section class="content">
+        <div class="container">
+            <div class="case-info">
+                @await Html.GetBlockGridHtmlAsync(Model.BlogGrid)
+            </div>
+        </div>
+    </section>
+}
+
+@if (hideFullScreenTopContainer)
+{
+    <script>
+        const layoutItem = document.querySelector('.umb-block-grid__layout-item[data-content-element-type-alias="oBlockFullScreenTopContainer"]');
+
+        if (layoutItem) {
+            layoutItem.style.display = 'none';
+        }
+    </script>
+}
+
+@if (isInBlogPage)
+{
+    <script>
+        const layoutItem = document.querySelector('.umb-block-grid__layout-item[data-content-element-type-alias="oBlogPostPreviewBlock"]');
+
+        if (layoutItem) {
+            layoutItem.style.display = 'none';
+        }
+    </script>
+}

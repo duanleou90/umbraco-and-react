@@ -1,0 +1,5 @@
+﻿{
+  "javascript": [
+    "~/App_Plugins/BlockGrid/FullBleed/oFullBleed.controller.js"
+  ]
+}

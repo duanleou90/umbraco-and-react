@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="OskiStarterKit" Version="4.0.1" />
     <PackageReference Include="Umbraco.Cms" Version="13.9.3" />
   </ItemGroup>
 

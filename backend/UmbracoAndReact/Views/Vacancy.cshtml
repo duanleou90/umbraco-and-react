@@ -1,0 +1,97 @@
+﻿@using Microsoft.AspNetCore.Http.Extensions
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@using System.Text.RegularExpressions;
+
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<OVacancy>
+@{
+    Layout = "Main.cshtml";
+}
+@functions {
+    public static string RemoveHtmlTags(string html)
+    {
+        if (string.IsNullOrEmpty(html))
+            return string.Empty;
+
+        // Pattern to match HTML tags
+        string pattern = "<.*?>";
+        // Replace HTML tags with an empty string
+        return Regex.Replace(html, pattern, string.Empty);
+    }
+}
+<main class="vacancy-page">
+    <a class="vacancy-page__link" href="@Model.Parent.Url()">
+        <img class="vacancy-page__link-img" src="/Content/images/slider-arrow-prev.svg" alt="Alternate Text" />
+        <li class="vacancy-page__link-name">@Umbraco.GetDictionaryValueOrDefault("Vacancy.Careers", "Careers")</li>
+    </a>
+    <div class="vacancy-page__container">
+        <div class="vacancy-page__vacancy">
+            <h3 class="vacancy-page__vacancy-title">@Model.Title</h3>
+            <p2 class="vacancy-page__vacancy-body" style="white-space:unset">@Model.Description</p2>
+        </div>
+
+        <div class="vacancy-page__tagswithform">
+            <ul class="vacancy-page__tagswithform-tags" style="margin-left: 20px; margin-right: 20px;">
+                @foreach (var tag in Model.Specialization)
+                {
+                    <li class="vacancy-page__tagswithform-tag">@tag</li>
+                }
+                @foreach (var tag in Model.LevelOfExperience)
+                {
+                    <li class="vacancy-page__tagswithform-tag">@tag</li>
+                }
+            </ul>
+            @if(Model.ContactCardDefault)
+            {
+                <div class="contact__response-message" style="margin-top:100px;">
+                    <div class="contact__content">
+                        <img src="~/Content/images/thank-you-contact.svg"  alt="thx_svg"/>
+                        <div class="contact__content-title">@Umbraco.GetDictionaryValueOrDefault("ContactForm.SuccessMessageTitle", "Thank you!")</div>
+                        <div class="contact__content-message">@Umbraco.GetDictionaryValueOrDefault("ContactForm.SuccessMessage", "We have received your message and will get in touch with you soon")</div>
+                        <div class="contact__goback">
+                            <a class="header__button" id="goBackContact">@Umbraco.GetDictionaryValueOrDefault("ContactForm.SuccessMessage.GoBack", "Go Back")</a>
+                        </div>
+                    </div>
+                </div>                
+                <section class="" id="contact">
+                    <form action="/Umbraco/Surface/Contact/SendMessage" id="contactForm" class="vacancy-page__tagswithform-form">
+                        @Html.AntiForgeryToken()
+
+                        <div class="contact__error-answer">
+                            @Umbraco.GetDictionaryValueOrDefault("ContactForm.UnsuccessMessage", "Message not sent.")
+                        </div>
+
+                        <input class="vacancy-page__tagswithform-form-input" style="display: none" type="text" name="subject" value="@(Umbraco.GetDictionaryValueOrDefault("Vacancy.Subject", "Respond to the vacancy") + " " + RemoveHtmlTags(Model.Title.ToString()))" required>
+                        <input class="vacancy-page__tagswithform-form-input" style="display: none" type="email" name="toEmail" value="@Umbraco.GetDictionaryValueOrDefault("Vacancy.toEmail", "olexander.ustych@oski.site")" required>
+
+                        <textarea name="message" class="vacancy-page__tagswithform-form-textarea" placeholder="@Umbraco.GetDictionaryValueOrDefault("Vacancy.Message", "Tell us what interested you in this vacancy and why you would be a good fit")" required></textarea>
+
+                        <input class="vacancy-page__tagswithform-form-input" type="text" name="name" placeholder="@Umbraco.GetDictionaryValueOrDefault("Vacancy.Name", "Name")" required>
+
+                        <input class="vacancy-page__tagswithform-form-input" type="email" name="email" placeholder="@Umbraco.GetDictionaryValueOrDefault("Vacancy.Email", "E-mail")" required>
+
+                        <input class="vacancy-page__tagswithform-form-input" type="url" name="linkedInUrl" placeholder="@Umbraco.GetDictionaryValueOrDefault("Vacancy.LinkedIn", "Link to LinkedIn")" required>
+
+                        <input id="pdfButton" type="file" name="pdfFile" accept=".pdf" required>
+                        <label id="pdfLabel" for="pdfButton" class="vacancy-page__tagswithform-form-input-pdf">@Umbraco.GetDictionaryValueOrDefault("Vacancy.File", "Select file Resume")</label>
+
+                        <button class="vacancy-page__tagswithform-form-input-button" type="submit" id="submit-contact">@Umbraco.GetDictionaryValueOrDefault("Vacancy.Button", "Apply to the vacancy")</button>
+                    </form>
+                </section>
+            }
+            else
+            {                
+                <section class="" id="contact">
+                    <div style="margin-top: 30px;">
+                        @await Html.PartialAsync("oskiPartials/OContactContainer", Model.Contact.FirstOrDefault().Content)
+                    </div>
+                </section>
+            }
+        </div>
+    </div>
+
+    <div class="career-vacancies__footer">
+        <p1>
+            @Umbraco.GetDictionaryValueOrDefault("Careers.JoinOSKI", "Join OSKI solutions and build a career with impact!")
+        </p1>
+    </div>
+</main>

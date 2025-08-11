@@ -1,0 +1,10 @@
+{
+  "javascript": [
+    "~/App_Plugins/BlockGrid/BlockSliderContainerWithRating/oBlockSliderContainerWithRating.controller.js",
+    "/Oski-assets/Scripts/jquery-3.4.1.min.js",
+    "/Oski-assets/Scripts/glider.min.js",
+    "/Oski-assets/Scripts/smoothscroll.min.js",
+    "/Oski-assets/Scripts/slick.min.js",
+    "/Oski-assets/Scripts/script.js"
+  ]
+}

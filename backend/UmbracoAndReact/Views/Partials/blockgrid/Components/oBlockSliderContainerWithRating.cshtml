@@ -1,0 +1,36 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@{
+    var content = (OBlockSliderContainerWithRating)Model.Content;
+    var imageType = content.OImageType == "rectangle" ? "0" : "50%";
+    var slides = content.OSlidesWithRating.Select(s => s.Content).Cast<OBlockSlideWithRating>();
+}
+<section class="reviews oski-mb-2 oski-mt-2" id="team">
+    <div class="container">
+        <h3 class="reviews__title section-title">@content.OTitle</h3>
+        <p class="reviews__text">@content.OSubTitle</p>
+        <div class="reviews__slider" data-slides-show="@content.ONumberOfSlides">
+            @foreach (var blockSlide in slides)
+            {
+                var slide = (OBlockSlideWithRating)blockSlide;
+                var fullReviewLink = slide.OFullReviewLink;
+                var serviceLogo = slide.OServiceLogo;
+                var starLogo = slide.OStarLogo;
+                <div class="reviews__slide">
+                    <div class="reviews__slide-content">
+                        <div class="reviews__stars">
+                            @for (int i = 0; i < slide.OStarsCount; i++)
+                            {
+                                <div class="reviews__one-star" style="background-image: url(@(starLogo != null ? starLogo.Url() : ""))"></div>
+                            }
+                            <div class="reviews__service-logo" style="background-image: url(@(serviceLogo != null ? serviceLogo.Url() : ""))"></div>
+                        </div>
+                        <span class="reviews__slide-name">@slide.OTitle</span>
+                        <p class="reviews__slide-position">@slide.OContentText</p>
+                        <p class="reviews__slide-author">@slide.OAuthor</p>
+                        <a class="reviews__slide-fullreview" href="@fullReviewLink.Url">@Umbraco.GetDictionaryValueOrDefault("BlockSlideWithRating.FullReviewLink", "View full review  →")</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

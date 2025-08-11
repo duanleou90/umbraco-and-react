@@ -1,0 +1,91 @@
+﻿@using Microsoft.Extensions.Configuration;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<OContactContainer>
+@{
+    Context.Session.Set("gRecaptcha", new byte[] { Convert.ToByte(Model.ORecaptcha) });
+}
+@inject IConfiguration configuration
+
+<section class="contact oski-pb-2 oski-pt-2 oski-mb-2 oski-mt-2 contact-margin-right-override" id="contact" style="@(Model.OIsWidthAuto ? "width: auto;": "")">
+
+    <div class="container">
+     
+        <div class="contact__response-message">
+            <div class="contact__content">
+                <img src="~/Content/images/thank-you-contact.svg" alt="thx_icon"/>
+                <div class="contact__content-title">@Umbraco.GetDictionaryValueOrDefault("ContactForm.SuccessMessageTitle", "Thank you!")</div>
+                <div class="contact__content-message">@Umbraco.GetDictionaryValueOrDefault("ContactForm.SuccessMessage", "We have received your message and will get in touch with you soon")</div>
+                <div class="contact__goback">
+                    <a class="header__button" id="goBackContact">@Umbraco.GetDictionaryValueOrDefault("ContactForm.SuccessMessage.GoBack", "Go Back")</a>
+                </div>
+            </div>
+        </div>
+        <div class="contact__form">
+       
+            <h5 class="contact__title section-title">@Model.OTitle</h5>
+            <p class="contact__text">@Model.OSubTitle</p>
+
+            <form action="/Umbraco/Surface/Contact/SendMessage" id="contactForm" class="contact__form">
+                @Html.AntiForgeryToken()
+
+                <div class="contact__error-answer">
+                    @Umbraco.GetDictionaryValueOrDefault("ContactForm.UnsuccessMessage", "Message not sent.")
+                </div>
+
+                <input class="contact__form-input" style="display: none" type="text" name="subject" value="@Model.OSubject" required>
+                <input class="contact__form-input" style="display: none" type="email" name="toEmail" value="@Model.OEmail" required>
+
+                <input class="contact__form-input" type="text" name="name" placeholder="Name" required>
+                @if (Model.OHasCompnayInputField)
+                {
+                    <input class="contact__form-input" type="text" name="company" placeholder="Company" required>
+                }
+                <input class="contact__form-input" type="email" name="email" placeholder="E-mail" required>
+
+                @if (Model.ShowPhoneNumber)
+                {
+                    <input class="contact__form-input" type="tel" name="phone" placeholder="Phone" required>
+                }
+                @if(Model.LinkedInLink)
+                {
+                    <input class="contact__form-input" type="url" name="linkedInUrl" placeholder="Link to LinkedIn" required>
+                }
+                @if(Model.Education)
+                {
+                    <input class="contact__form-input" type="text" name="education" placeholder="Education" required />
+                }
+                @if(Model.LevelOfEnglish.Count() >= 3)
+                {
+                    <div class="custom-select">
+                        <select name="@(nameof(Model.LevelOfEnglish))" required>
+                            <option value="0">@(Model.LevelOfEnglish.ToList()[0])</option>
+                            @foreach(var level in Model.LevelOfEnglish.Where(x => Model.LevelOfEnglish.IndexOf(x) > 0))
+                            {
+                                <option value="@(level)">@(level)</option>
+                            }
+                        </select>
+                    </div>
+                }
+                @if(Model.AttachFile)
+                {
+                    <input id="pdfButton" type="file" name="pdfFile" accept=".pdf" required>
+                    <label id="pdfLabel" for="pdfButton" class="contact__form-input" style="text-align: start;">Select file Resume</label>
+                }
+                <textarea name="message" class="contact__form-message" placeholder="@Model.OPlaceholderForMessage" required></textarea>
+                @if (Model.ORecaptcha)
+                {
+                    <div class="contact__recaptcha">
+                        @Umbraco.GetDictionaryValueOrDefault("ContactForm.ErrorRecaptcha", "Please check the box below to proceed.")
+                    </div>
+
+                    <div class="g-recaptcha" data-sitekey="@configuration["Google.Recaptcha.SiteKey"]"></div>
+                }
+                <button class="contact__form-button" type="submit" id="submit-contact">@Model.OButtonName</button>
+            </form>
+        </div>
+    </div>
+
+</section>
+@if (Model.ORecaptcha)
+{
+    <script src="https://www.google.com/recaptcha/api.js" defer></script>
+}

@@ -1,0 +1,34 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@inject Umbraco.Cms.Core.Services.IContentService ContentService
+@using Oski.Core.Models.Views;
+@{
+    var content = (OLatestArticles)Model.Content;
+}
+
+    <div class="latest-articles">
+        <h4 class="oski-mb-4">Latest Articles</h4>
+        <div class="latest-articles-area-container oski-mb-5">
+        @foreach (var item in content.OArticles)
+            {
+                string udiString = item.Udi.ToString();
+                Guid guid;
+
+                string guidString = udiString.Split('/')[3];
+                if (Guid.TryParse(guidString, out guid))
+                {
+                    var latestArticles = ContentService.GetById(guid);
+                    if (latestArticles != null)
+                    {
+                        string title = latestArticles.GetValue<string>("oTitle");
+                        string description = latestArticles.GetValue<string>("oDescription");
+                        string url = item.Url;
+
+                        <div class="latest-articles-area">
+                            <h4><a href="@url" class="latestArticleslink">@title</a></h4>
+                            <p>@description</p>
+                        </div>
+                    }
+                }
+            }
+        </div>
+    </div>

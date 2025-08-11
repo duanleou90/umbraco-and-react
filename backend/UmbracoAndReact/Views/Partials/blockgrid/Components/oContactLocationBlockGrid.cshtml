@@ -1,0 +1,29 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@inject IWebHostEnvironment hostingEnvironment
+@{
+    var content = (OContactLocationBlockGrid)Model.Content;
+}
+<div class="contacts-page oski-mb-4 oski-mt-4">
+    <div class="container">
+        <div class="contacts-page__inner">
+            <div class="contacts-page__information">
+                <div class="contacts-page__content">
+                    @Html.Raw(content.OContactsContent)
+                </div>
+                <div class="header__socials">
+                    @foreach (var link in content.OSocialLinks)
+                    {
+                        var linkContent = (SocialLink)link.Content;
+                        var linkContentUrl = (List<Umbraco.Cms.Core.Models.Link>)linkContent.Value("oUrl");
+                        <a href="@linkContentUrl.FirstOrDefault().Url" target="@(link?.Content.Value("oUrl"))" class="header__social">
+                            @Html.Raw(System.IO.File.ReadAllText("wwwroot" + linkContent.OIcon.Url()))
+                        </a>
+                    }
+                </div>
+            </div>
+            <div class="contacts-page__map">
+                @Html.Raw(content.OGoogleMapLocation)
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,8 @@
+<div ng-controller="oFullBleed"
+     style="background-color: {{block.data.oBackgroundColor}};
+            color: {{block.data.oTextColor}};
+            padding: 50px;
+            background: linear-gradient(to right, {{block.data.oFromColor}}, {{block.data.oToColor}});
+            {{ block.data.oBackgroundImage ? 'background-image: url(\'' + imageUrl + '\');' : '' }}">
+    <umb-block-grid-render-area-slots></umb-block-grid-render-area-slots>
+</div>

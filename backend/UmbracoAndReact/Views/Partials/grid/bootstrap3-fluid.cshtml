@@ -1,4 +1,4 @@
-@using System.Web
+﻿@using System.Web
 @using Microsoft.AspNetCore.Html
 @using Newtonsoft.Json.Linq
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<dynamic>
@@ -43,7 +43,7 @@
     </div>
 }
 
-@functions{
+@functions {
 
     private async Task renderRow(dynamic row)
     {
@@ -62,13 +62,13 @@
                             }
                         </div>
                     </div>
-                 }
+                }
             </div>
         </div>
     }
 }
 
-@functions{
+@functions {
 
     public static HtmlString RenderElementAttributes(dynamic contentItem)
     {
@@ -86,7 +86,8 @@
 
         JObject style = contentItem.styles;
 
-        if (style != null) {
+        if (style != null)
+        {
             var cssVals = new List<string>();
             foreach (JProperty property in style.Properties())
             {

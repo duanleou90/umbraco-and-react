@@ -1,0 +1,17 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+
+@{
+    var content = (OBlockListTitleWithIcon)Model.Content;  
+    var test = content;
+}
+<div class="industries-container">
+    @foreach (var item in content.OListTitleWithIcon)
+    {
+        var titleWithIcon = (OTitleWithIcon)item.Content;
+
+        <div class="industries">
+            <h4 class="industries__title">@titleWithIcon.OTitle</h4>
+            <div class="industries__icon" style="background-image: url(@(titleWithIcon.OIcon != null ? titleWithIcon.OIcon.Url() : "")"></div>
+        </div>
+    }
+</div>

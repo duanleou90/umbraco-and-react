@@ -1,0 +1,56 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@using System.Globalization
+@{
+    var content = (OHero)Model.Content;
+
+
+    var cultureCode = UmbracoContext.PublishedRequest.PublishedContent;
+    string selectedLanguage = "en-us";
+
+    @foreach (var (culture, infos) in cultureCode.Cultures)
+    {
+        if (cultureCode.GetCultureFromDomains().ToLower().Equals(culture))
+        {
+            selectedLanguage = new CultureInfo(culture).IetfLanguageTag;
+            continue;
+        }
+    }
+    CultureInfo cultureInfo = new CultureInfo(selectedLanguage);
+}
+
+<div class="top-block-container">
+    <div class="left-block">
+        <div class="block-rte"> @content.SubTitleTop </div>
+        <div class="block-title oski-mt-3 oski-mb-5">@content.OTitle</div>
+        <div class="block-rte ">@content.SubTitleLink</div>
+        <div class="block-image-container" style="margin-top: 38px !important;">
+            @foreach (var item in content.OGroupOfPictures)
+            {
+                var altText = item.Name ?? "honor";
+                <img src="@item.Url()" style="height:80px; width:auto;" alt="@altText"/>
+            }
+        </div>
+        @{
+            string getInTouch = "Get in touch";
+        }
+        @if (cultureInfo.ToString().ToLower().Equals("en-us"))
+        {
+            getInTouch = "Get in touch";
+        }
+        else if (cultureInfo.ToString().ToLower().Equals("et-ee"))
+        {
+            getInTouch = "Ühendust võtma";
+        }
+        <button class="header__button responsive-button">@getInTouch</button>
+    </div>
+    <div class="right-block">
+        @if (content.OHideFormOnMobileDevices)
+        {
+            <div class="container-back-button">
+                <button class="back-button"/>
+            </div>
+
+        }
+        @await Html.PartialAsync("oskiPartials/OContactContainer", content.OContact.FirstOrDefault().Content)
+    </div>
+</div>

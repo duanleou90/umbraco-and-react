@@ -1,0 +1,42 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@{
+    var content = (BlockSliderWithImages)Model.Content;
+}
+
+<section class="reviews oski-mb-2 oski-mt-2" id="team">
+    <div class="container">
+        @if (content.OTitle != "")
+        {            
+            <h3 class="reviews__title section-title">@content.OTitle</h3>
+        }
+        @if (@content.OSubTitle != "") 
+        {
+            <p class="reviews__text">@content.OSubTitle</p>
+        }
+        <div class="slider-one" data-slides-show="@content.ONumberOfSlides">
+            @{/*reviews__slider*/}
+            @foreach (var slide in content.Slides)
+            {
+                var _slide = (BlockSlideWithImage)slide.Content;
+                <!--
+                    <div class="reviews__slide">
+                    </div>
+                -->
+                /*reviews__slide-content*/
+                <div class="slider-one__content">
+                    <div>
+                        @content.TitleLeft
+                        @_slide.TextLeft
+                    </div>
+                    <div class="slider-one__content__img-container">
+                        <img src="@_slide.Image.Url()" alt="@_slide.Image.Name() ?? slide image" />
+                    </div>
+                    <div>
+                        @content.TitleRight
+                        @_slide.TextRight
+                    </div>
+                </div>
+            }
+        </div>
+     </div>
+</section>

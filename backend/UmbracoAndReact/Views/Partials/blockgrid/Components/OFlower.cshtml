@@ -1,0 +1,31 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@{
+    var content = (Oflower)Model.Content;
+}
+
+<section class="intership-center">
+    <div class="_container">
+        <div class="intership-center__title">@(content.Title)</div>
+    </div>
+    <div class="intership-center__flower">
+        <div class="intership-center__flower-item item1">
+            <p>@(content.LeftUpText)</p>
+        </div>
+        <div class="intership-center__flower-item item2">
+            <p>@(content.RightUpText)</p>
+        </div>
+        <span class="intership-center__flower-image">
+            <img src="@(content.Image.Url())" alt="Logo">
+        </span>
+        <div class="intership-center__flower-item item3">
+            <p>@(content.LeftDownText)</p>
+        </div>
+        <div class="intership-center__flower-item item4">
+            <p>@(content.RightDownText)</p>
+        </div>
+    </div>
+</section>

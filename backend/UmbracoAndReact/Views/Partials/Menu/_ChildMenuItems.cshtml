@@ -1,0 +1,50 @@
+﻿@model OHeaderMenuItem
+
+@{
+    var linkUrl = Model?.OLink?.Url ?? "";
+    var linkName = Model?.OLink?.Name ?? "Read more";
+    var needHelp = ViewData["NeedHelp"] as OHome;
+    var numberOfColumns = Model.OCountOfColumns > 0 ? Model.OCountOfColumns : 1;
+    var isGrid = Model.OIsGrid;
+    var gridStyle = $"display: grid; grid-template-columns: repeat({numberOfColumns}, 1fr);";
+    var flexStyle = "display: flex";
+    var styling = isGrid ? gridStyle : flexStyle;
+}
+<div class="header__menu__item__children__wrap">
+    <div class="header__menu__item__children">
+        @if (linkUrl != null)
+        {
+            /*link on desktop menu*/
+            var isCurrentPage = ViewData["url"].ToString().Equals(linkUrl);
+            var hrefLink = linkUrl != "" ? $"href={linkUrl}" : "";
+            <a @hrefLink class="header__menu__item__redirect @(isCurrentPage ? "active-redirect" : "")">@Model.OCaption</a>
+        }
+        <div class="header__menu__item__children__right" style="@styling">
+            @foreach (var child in Model.OChildMenuItems.Select(item => item.Content))
+            {
+                @await Html.PartialAsync("Menu/_NestedChildMenuItems", child)
+            }
+        </div>
+        @if (needHelp.ShowDesktopNeedHelpMenu)
+        {
+            <div class="header__menu__item__need-help need-help-mobil">
+                <div class="header__menu__item__children__title">
+                    @needHelp.ONeedHelpTitle
+                </div>
+                <div class="header__menu__item__need-help__content">
+                    <div class="header__menu__item__need-help__content__text">
+                        @Html.Raw(needHelp.ONeedHelpText)
+                    </div>
+                    <div class="header__menu__item__need-help__content__success-manager">
+                        <div class="header__menu__item__need-help__content__success-manager__photo" style="background-image: url('@(needHelp.OSuccessManagerPhoto != null ? @needHelp.OSuccessManagerPhoto.Url() : " ")');"></div>
+                        <div class="header__menu__item__need-help__content__success-manager__info">
+                            <div class="header__menu__item__need-help__content__success-manager__name">@needHelp.OSuccessManagerName</div>
+                            <div class="header__menu__item__need-help__content__success-manager__position">@needHelp.OSuccessManagerPosition</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+

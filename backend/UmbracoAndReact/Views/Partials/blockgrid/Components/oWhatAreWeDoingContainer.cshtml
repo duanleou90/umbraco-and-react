@@ -1,0 +1,26 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@using Limbo.Umbraco.Tables.Models
+@{
+    var content = (OWhatAreWeDoingContainer)Model.Content;
+    var details = content.OContent.Select(d => d.Content).Cast<OWhatAreWeDoing>();
+    var numberOfColumns = content.ONumberOfColumns > 0 ? content.ONumberOfColumns : 1;
+}
+
+<div
+    class="details-container__inner__details" 
+    style="grid-template-columns: repeat(@numberOfColumns, minmax(180px, 1fr));">
+    @foreach (var item in details)
+    {
+        var iconHeightWidth = content.OAllIconcHeight != 0 ? content.OAllIconcHeight : 26;
+        var altText = item.OIcon.Name() ?? "What are we doing image";
+
+        <div class="details-container__inner__details__detail">
+            <div class="details-container__inner__details__detail__icon">
+                <img alt="@altText" src="@item.OIcon?.Url()" style="height: @(iconHeightWidth)px; width: @(iconHeightWidth)px;">
+            </div>
+            <div class="details-container__inner__details__detail__info">
+                @Html.Raw(item.OTitle)
+            </div>
+        </div>
+    }
+</div>

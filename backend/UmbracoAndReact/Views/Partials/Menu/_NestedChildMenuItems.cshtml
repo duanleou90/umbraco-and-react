@@ -1,0 +1,50 @@
+﻿@model OHeaderMenuItem
+@{
+    var childLinkUrl = Model?.OLink?.Url ?? "";
+    var column = Model.OCountOfColumns;
+    var row = Model.RowIndex;
+}
+
+@if (Model.OChildMenuItems.Any())
+{
+    <div class="header__menu__item__children__container" style="grid-column:@column; grid-row:@row;">
+        <div class="header__menu__item__children__item
+            @(ViewData["url"].ToString().Equals(childLinkUrl)  ? "header__menu-link--active" : "")"
+            style="display:flex; justify-content: space-between;">
+
+            @{
+                var hrefChildLinkUrl = childLinkUrl != "" ? $"href={childLinkUrl}" : "";
+            }
+            @if (hrefChildLinkUrl != "")
+            {                
+                <a @hrefChildLinkUrl>@Model.OCaption</a>
+            }
+            else
+            {
+                <div>@Model.OCaption</div>
+            }
+            <span class="header__menu__item__icon__nested"></span>
+        </div>
+        <div class="header__menu__item__children__item__nested">
+            @foreach (OHeaderMenuItem nestedChild in Model.OChildMenuItems.Select(item => item.Content))
+            {
+                var nestedChildLinkUrl = nestedChild?.OLink?.Url ?? "";
+                var hrefNestedChildLinkUrl = nestedChildLinkUrl != "" ? $"href={nestedChildLinkUrl}" : "";
+                <div class="header__menu__item__children__item__nested-children__item @(ViewData["url"].ToString().Equals(nestedChildLinkUrl) ? "header__menu-link--active" : "")">
+                    <a @hrefNestedChildLinkUrl>@nestedChild.OCaption</a>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="header__menu__item__children__container" style="grid-column:@column; grid-row:@row;">
+        <div class="header__menu__item__children__item @(ViewData["url"].ToString().Equals(childLinkUrl) ? "header__menu-link--active" : "")">
+            @{
+                var hrefChildLinkUrl = childLinkUrl != "" ? $"href={childLinkUrl}" : "";
+            }
+            <a @hrefChildLinkUrl>@Model.OCaption</a>
+        </div>
+    </div>
+}

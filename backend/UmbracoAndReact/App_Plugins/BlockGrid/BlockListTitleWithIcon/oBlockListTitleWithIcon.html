@@ -1,0 +1,6 @@
+﻿<div class="industries-container" ng-controller="oBlockListTitleWithIcon">
+    <div class="industries" ng-click="block.edit()" ng-controller="oTitleWithIconController" ng-repeat="item in block.data.oListTitleWithIcon.contentData">
+        <div class="industries__icon" style="background-image: url({{imageUrl}})"></div>
+        <h4 class="industries__title" ng-bind="item.oTitle"></h4>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@{
+    var content = (OFullScreenTopBlockImageWithText)Model.Content;
+}
+
+<section class="new-top">
+    <div class="_container">
+        <div class="new-top__inner">
+            <div class="new-top__info">
+                <h1 class="new-top__title">@(content.Title)</h1>
+                <div class="new-top__description">
+                    <p class="new-top__text">@(content.SubTitleCaption)</p>
+                    <p class="new-top__text">@(content.Subtitle)</p>
+                    <a class="new-top__link main-button" href="@(content.ButtonUrl.Url)"><span>@(content.ButtonText)</span></a>
+                </div>
+                <div class="new-top__description mobile-version">
+                    <p class="new-top__text">@(content.MobileSubTitle)</p>
+                </div>
+            </div>
+            <div class="new-top__image">
+                <img src="@(content.Image.Url())" alt="Top image">
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,6 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@{
+    var content = (OButton)Model.Content;
+    var buttonLink = (Umbraco.Cms.Core.Models.Link)content.OButtonUrl;
+}
+<a href="@buttonLink.Url" class="header__button responsive-button">@content.OButtonName</a>

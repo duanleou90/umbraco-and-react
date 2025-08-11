@@ -1,0 +1,10 @@
+<div class="details-container__inner__details" ng-click="block.edit()" ng-controller="oWhatAreWeDoingContainer" style="grid-template-columns: repeat({{block.data.oNumberOfColumns}}, minmax(100px,1fr));">
+    <div class="details-container__inner__details__detail" ng-repeat="item in block.data.oContent.contentData">
+        <div class="details-container__inner__details__detail__icon">
+            <img ng-src="{{item.resolvedMediaUrl}}" ng-style="{'height': block.data.oAllIconcHeight !== '' ? block.data.oAllIconcHeight + 'px' : '26px', 
+                                                               'width': block.data.oAllIconcHeight !== '' ? block.data.oAllIconcHeight + 'px' : '26px'}" />
+        </div>
+        <div class="details-container__inner__details__detail__info" ng-bind-html="item.oTitle">
+        </div>
+    </div>
+</div>

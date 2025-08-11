@@ -1,0 +1,217 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<OCareers>
+@{
+	Layout = "Main.cshtml";
+}
+<main class="careers-page">
+
+    <section class="career-hero">
+        <div class="career-hero__container">
+            <div class="career-hero__titleWithSubtitle">
+                <h1 class="career-hero__title">@Model.Title</h1>
+                <p1 class="career-hero__subtitle">@Model.Title</p1>
+            </div>
+            <p1 class="career-hero__info">
+                @Model.Caption
+            </p1>
+        </div>
+    </section>
+
+
+
+    @if(Model.Content.Count > 0)
+    {
+        <section class="career-join">
+            <h2 class="career-join__title">@Umbraco.GetDictionaryValueOrDefault("Careers.WhyJoin", "Why join OSKI solutions")</h2>
+            <div class="career-join__profits">
+                @{
+                    var perColumn = 0;
+                    if(Model.NumberOfColumns > 1)
+                    {
+                        perColumn = (int)Math.Ceiling(double.Parse(Model.Content.Count.ToString()) / double.Parse(Model.NumberOfColumns.ToString()));
+                    }
+                }
+
+                <div class="career-join__profits-first">
+                    @foreach (var item in Model.Content)
+                    {                        
+                        <div class="career-join__profits-item">
+                            <!--
+                                // /Content/images/CareerVacancies/CareerProfitVector.svg
+                                style="background-image: url(@((item.Content as OWhatAreWeDoing).OIcon != null ? (item.Content as OWhatAreWeDoing).OIcon.Url() : "")"
+                            -->
+                            <img src="@((item.Content as OWhatAreWeDoing).OIcon.Url())" alt="join profit" class="career-join__profits" />
+                            <p2>@((item.Content as OWhatAreWeDoing).OTitle)</p2>
+                        </div>
+
+                        var index = Model.Content.IndexOf(item) % perColumn;
+                        if (index + 1 >= perColumn)
+                        {
+                            break;
+                        }
+                    }
+                </div>
+                @if(Model.NumberOfColumns > 1)
+                {
+                    for(int i = 0; i < Model.NumberOfColumns - 1; i++)
+                    {
+                        <div class="career-join__profits-second">
+                            @foreach (var item in Model.Content.Skip(perColumn))
+                            {
+                                <div class="career-join__profits-item">
+                                    <img src="@((item.Content as OWhatAreWeDoing).OIcon.Url())" alt="join profit" class="career-join__profits" />
+                                    <p2>@((item.Content as OWhatAreWeDoing).OTitle)</p2>
+                                </div>
+
+                                var index = Model.Content.IndexOf(item) % perColumn;
+                                if (index + 1 >= perColumn)
+                                {
+                                    break;
+                                }
+                            }
+                        </div>
+                    }                        
+                }
+            </div>
+        </section>
+    }
+
+
+
+    @{
+        var cards = Model.Children.Select(x => x as OVacancy);
+        var urls = cards.Select(c => c.UrlSegment);
+    }
+    <section class="career-vacancies">
+        <h2 class="career-vacancies__title">@Umbraco.GetDictionaryValueOrDefault("Careers.Vacancies", "Vacancies")</h2>
+
+        <div class="career-vacancies__main">
+            <div class="career-vacancies__main-cardslist">
+                @foreach (var card in cards)
+                {
+                    <div class="career-vacancies__main-cardslist__card">
+                        <h3 class="career-vacancies__main-cardslist__card-title">
+                            @{
+                                var href = urls.Where((x, index) => cards.IndexOf(card) == index).FirstOrDefault();                                
+                            }
+                            <a href="@href">
+                                @card.Title
+                            </a>
+                        </h3>
+
+                        <ul class="career-vacancies__main-cardslist__card-tagslist">
+                            @foreach (var tag in card.Specialization)
+                            {
+                                <li class="career-vacancies__main-cardslist__card-tag">@tag</li>
+                            }
+                            @foreach (var tag in card.LevelOfExperience)
+                            {
+                                <li class="career-vacancies__main-cardslist__card-tag">@tag</li>
+                            }
+                        </ul>
+
+
+                        <p2 class="career-vacancies__main-cardslist__card-body">
+                            @card.DescriptionPreview
+                            <button id="moreDetails" class="career-vacancies__main-cardslist__card-button">@Umbraco.GetDictionaryValueOrDefault("Careers.MoreDetails", "More details")</button>
+                        </p2>
+
+                        <p2 class="career-vacancies__main-cardslist__card-body" style="display:none; white-space:unset;">
+                            @card.Description
+                            <div style="white-space: pre-line;">
+                                <a href="@href"><button class="contact__form-button">@Umbraco.GetDictionaryValueOrDefault("Careers.Apply", "Apply")</button></a>
+                            </div>
+                        </p2>
+
+                    </div>
+                }
+            </div>
+
+            <div class="career-vacancies__main-divider"></div>
+
+            <div class="career-vacancies__main-searchwithtags">
+                <div class="career-vacancies__main-searchwithtags-search">
+                    <input type="text" id="searchInput" placeholder="@Umbraco.GetDictionaryValueOrDefault("Careers.Search", "Search by position..")"
+                    class="career-vacancies__main-searchwithtags-search-input">
+                    <button class="career-vacancies__main-searchwithtags-search-button" />
+                </div>
+
+                <div class="career-vacancies__main-searchwithtags__tags">
+                    @{
+                        var allCards = Model.Children.Select(x => x as OVacancy);
+                        var specializations = allCards.SelectMany(x => x.Specialization).Distinct();
+                        var levels = allCards.SelectMany(x => x.LevelOfExperience).Distinct();
+
+                        var activeTags = specializations.Concat(levels).ToList();
+                    }
+                    @if (activeTags.Count > 0)
+                    {                                         
+                        <div class="career-vacancies__main-searchwithtags__tags-list">
+                            @foreach (var item in activeTags)
+                            {
+                                <a href="" class="career-vacancies__main-searchwithtags__tags-tag active">
+                                    <img src="/Content/images/close-active.svg" alt="remove tag"
+                                            class="career-vacancies__main-searchwithtags__tags-tag-img" />
+                                    <li>@item</li>
+                                </a>
+                            }
+                        </div>
+                    }
+
+                    @{
+                        var _allCards = Model.Children.Select(x => x as OVacancy);
+                        var _specializations = allCards.SelectMany(x => x.Specialization).Distinct();
+                        var _levels = allCards.SelectMany(x => x.LevelOfExperience).Distinct();
+
+                        Dictionary<string, IEnumerable<string>> _tags = new Dictionary<string, IEnumerable<string>>()
+                        {
+                            {
+                                "Specialization",
+                                _specializations
+                            },
+                            {
+                                "Level of experience",
+                                _levels
+                            },
+                        };
+                    }
+                    @foreach (var item in _tags)
+                    {
+                        <div class="career-vacancies__main-searchwithtags__tags-group">
+                            <h3 class="career-vacancies__main-searchwithtags__tags-title">
+                                @{
+                                    string _title = "";
+                                    if (item.Key == "Specialization")
+                                    {
+                                        _title = @Umbraco.GetDictionaryValueOrDefault("Careers.Specialization", "Specialization");
+                                    }
+                                    else if (item.Key == "Level of experience")
+                                    {
+                                        _title = @Umbraco.GetDictionaryValueOrDefault("Careers.LevelOfExperience", "Level of experience");
+                                    }
+                                }
+                                @(_title)
+                            </h3>
+
+                            <ul class="career-vacancies__main-searchwithtags__tags-list">
+                                @foreach (var value in item.Value)
+                                {
+                                    <a href="" class="career-vacancies__main-searchwithtags__tags-tag">
+                                        <li>@value</li>
+                                    </a>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="career-vacancies__footer">
+            <p1>
+                @Umbraco.GetDictionaryValueOrDefault("Careers.JoinOSKI", "Join OSKI solutions and build a career with impact!")
+            </p1>
+        </div>
+    </section>
+
+</main>

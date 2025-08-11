@@ -1,0 +1,101 @@
+﻿@using Oski.Core.Helpers
+@using System.Globalization
+@using Umbraco.Cms.Core.Services
+
+@inject IUserService UserService;
+
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@{
+
+    var cultureCode = UmbracoContext.PublishedRequest.PublishedContent;
+    string selectedLanguage = "en-US";
+
+    @foreach (var (culture, infos) in cultureCode.Cultures)
+    {
+        if (cultureCode.GetCultureFromDomains().ToLower().Equals(culture))
+        {
+            selectedLanguage = new CultureInfo(culture).IetfLanguageTag;
+            continue;
+        }
+    }
+    CultureInfo cultureInfo = new CultureInfo(selectedLanguage);
+    var currentPage = (BlockGridPage)ViewBag.CurrentPage;
+    var content = (OAuthorAndReadTime)Model.Content;
+    var showAuthorAndReadTime = (bool?)ViewBag.ShowAuthorAndReadTime;
+    var shareLinks = (IEnumerable<SocialLink>)ViewBag.ShareLinks;
+    var author = UserService.GetUserById(Convert.ToInt32(content.OAuthor));
+    var (authorPage, authorAvatar) = currentPage.GetAuthorPageAndAvatar(author);
+    var readTime = CalculationTime.CalculateReadTime(currentPage.BlogGrid);
+
+    var request = Context.Request;
+    var scheme = request.Scheme;
+    var host = request.Host;
+    var path = request.Path;
+    var queryString = request.QueryString;
+    var currentUrl = $"{scheme}://{host}{path}{queryString}";
+
+}
+
+@if (showAuthorAndReadTime.HasValue && showAuthorAndReadTime.Value)
+{
+    <div>
+        <div class="oski-mb-1">
+            <div class="blogpost-header">
+                <div class="inner-flex-container" style="width: 100%">
+                    <img src="@authorAvatar" alt="@author?.Name" />
+                    <div class="text-container">
+                        <span class="author-text" style="width: 100%">
+                            <a href="@authorPage" class="author__link">By @author?.Name</a><br />
+                        </span>
+                        <span class="text-date">
+                            @Umbraco.GetDictionaryValueOrDefault("BlogPost.Published", "Published: ") @currentPage.CreateDate.ToString("MMMM d, yyyy", cultureInfo)
+                        </span>
+                    </div>
+                </div>
+                <div class="inner-flex-container">
+
+                    <span class="text-date readtime">
+                        @readTime @Umbraco.GetDictionaryValueOrDefault("BlogPost.MinRead", " min read")
+                    </span>
+
+                    <div class="dropdown-container">
+                        <button id="myButton" class="text-like-button dropdown-button">
+                            <img src="~/content/images/share-icon.svg" alt="Button Image" />
+                            <span class="text-date">@Umbraco.GetDictionaryValueOrDefault("BlogPost.Share", "Share")  </span>
+                        </button>
+
+                        @if (shareLinks.Any())
+                        {
+                            <div id="contextMenu" class="context-menu dropdown-content" hidden>
+                                <ul>
+                                    @foreach (SocialLink link in shareLinks)
+                                    {
+                                        var shareLink = link.OUrl.First().Name + currentUrl;
+                                        string onClickEvent = "";
+                                        if(link.OSocialNetworkName == "Copy link")
+                                        {
+                                            onClickEvent = "onclick=navigator.clipboard.writeText(window.location.href);";
+                                            shareLink = null;
+                                        }
+
+                                        <li>
+                                            <a href="@shareLink" class="blogpost-share-social-icon"
+                                               title="@(onClickEvent == "" ? $"Share on {link.OSocialNetworkName}" : link.OSocialNetworkName )"
+                                               target="@(link.OUrl.First().Target)"
+                                               @onClickEvent style="cursor:pointer;">
+                                               @Html.Raw(System.IO.File.ReadAllText("wwwroot" + link.OIcon.Url()))
+
+                                                <span class="social-top">@link.OSocialNetworkName</span>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}

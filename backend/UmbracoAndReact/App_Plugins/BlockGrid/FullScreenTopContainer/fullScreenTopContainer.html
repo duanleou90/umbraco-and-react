@@ -1,0 +1,14 @@
+﻿<div ng-controller="fullScreenTopContainerController" ng-click="block.edit()">
+    <div style="background: url({{image.mediaLink}}); background-size: cover; background-repeat: no-repeat;" class="top-container">
+        <div class="top__content" style="width: 100%;">
+            <div class="top-title">
+                <h1 ng-bind-html="title" style="color: #{{fontColor}}; background-color: {{ backgroundColor }}"></h1>
+            </div>
+            <ul class="top__list" style="color: white; margin: auto; width: max-content;">
+                <li ng-repeat="string in block.data.oItems">
+                    <p class="top__list-item">{{string.value}}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

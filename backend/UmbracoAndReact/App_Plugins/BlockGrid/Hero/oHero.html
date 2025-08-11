@@ -1,0 +1,31 @@
+﻿<div class="top-block-container" ng-click="block.edit()" ng-controller="oHeroController">
+    <div class="left-block">
+        <div ng-bind-html="block.data.subTitleTop"></div>
+        <div class="block-title oski-mt-3 oski-mb-5">{{block.data.oTitle}}</div>
+        <div ng-bind-html="block.data.subTitleLink"></div>
+        <div class="block-image-container" style="margin-top: 38px !important;">
+            <img ng-src="{{ mediaLink }}" ng-repeat="mediaLink in block.data.mediaLinks" style="height: 80px; width: auto;" />
+        </div>
+        <button class="header__button responsive-button">Get in touch</button>
+    </div>
+<div class="right-block">
+    <div class="container-back-button" ng-if="block.data.oHideFormOnMobileDevices">
+        <button class="back-button"></button>
+    </div>
+    <section class="contact oski-pb-2 oski-pt-2" id="contact" ng-click="block.edit()" ng-repeat="form in block.data.oContact.contentData">
+        <div class="container">
+            <h3 class="contact__title section-title">{{form.oTitle}}</h3>
+            <p class="contact__text">{{form.oSubTitle}}</p>
+            <form class="contact__form">
+                <input class="contact__form-input" style="display: none" type="text" name="subject" value="{{form.oSubject}}" required>
+                <input class="contact__form-input" style="display: none" type="email" name="toEmail" value="{{form.oEmail}}" required>
+                <input class="contact__form-input" type="text" name="name" placeholder="Name" required>
+                <input class="contact__form-input" type="email" name="email" placeholder="E-mail" required>
+                <input ng-if="block.data.showPhoneNumber" class="contact__form-input" type="tel" name="phone" placeholder="Phone" required>
+                <textarea name="message" class="contact__form-message" placeholder="{{form.oPlaceholderForMessage}}" required></textarea>
+                <button class="contact__form-button" type="submit" id="submit-contact">{{form.oButtonName}}</button>
+            </form>
+        </div>
+    </section>
+</div>
+</div>

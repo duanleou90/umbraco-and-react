@@ -1,0 +1,33 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@using Limbo.Umbraco.Tables.Models
+@{
+    var content = (OTables)Model.Content;
+    var value = content.OskiTable;
+    var showBorders = content.OShowBorders;
+    var borderColor = content.OBorderColor;
+}
+
+<section class="oski-mt-3 oski-mb-3">
+    @if (value is TableModel data)
+    {
+        <table style="border-collapse: separate; border-spacing: 0; @(showBorders ? $"border: 1px solid #{borderColor} !important;" : "")" class="table">
+            @foreach (IReadOnlyList<TableCell> row in data.Cells)
+            {
+                <tr style="@(showBorders ? $"border-top: 1px solid #{borderColor}; border-bottom: 1px solid #{borderColor};" : "")">
+                    @foreach (TableCell cell in row)
+                    {
+                        var borderStyle = showBorders ? $"border-left: 1px solid #{borderColor}; border-right: 1px solid #{borderColor};" : "";
+                        if (cell.Scope == TableCellScope.Col)
+                        {
+                            <th style="@(borderStyle) background-color: #@content.OheaderColor !important;">@Html.Raw(cell.Value)</th>
+                        }
+                        else
+                        {
+                            <td style="@(borderStyle) background-color: #@content.ObodyColor !important; @(showBorders ? $"border-bottom: 1px solid #{borderColor};" : "")">@Html.Raw(cell.Value)</td>
+                        }
+                    }
+                </tr>
+            }
+        </table>
+    }
+</section>

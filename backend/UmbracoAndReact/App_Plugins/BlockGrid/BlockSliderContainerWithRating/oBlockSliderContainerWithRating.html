@@ -1,0 +1,20 @@
+﻿<section class="reviews oski-mb-2 oski-mt-2" id="team" ng-controller="oBlockSliderContainerWithRating" style="padding: 0px 2%;">
+    <div class="container">
+        <h3 class="reviews__title section-title">{{block.data.oTitle}}</h3>
+        <p class="reviews__text">{{block.data.oSubTitle}}</p>
+        <div class="reviews__slider" data-slides-show="{{block.data.oNumberOfSlides[0]}}">
+            <div class="reviews__slide" ng-repeat="blockSlide in block.data.oSlidesWithRating.contentData" ng-click="block.edit()">
+                <div class="reviews__slide-content">
+                    <div class="reviews__stars">
+                        <div class="reviews__one-star" ng-repeat="star in getStarsArray(blockSlide.oStarsCount) track by $index" style="background-image: url('{{blockSlide.starLogoImage}}')"></div>
+                        <div class="reviews__service-logo" style="background-image: url('{{blockSlide.serviceLogoImage}}')"></div>
+                    </div>
+                    <span class="reviews__slide-name">{{blockSlide.oTitle}}</span>
+                    <p class="reviews__slide-position">{{blockSlide.oContentText}}</p>
+                    <p class="reviews__slide-author">{{blockSlide.oAuthor}}</p>
+                    <a class="reviews__slide-fullreview" href="@fullReviewLink.Url">View full review  →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

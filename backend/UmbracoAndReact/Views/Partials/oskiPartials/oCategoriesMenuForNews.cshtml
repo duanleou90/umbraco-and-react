@@ -1,0 +1,102 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<OBlog>
+@{
+    string queryCategory = Context.Request.Query["category"].ToString() ?? "";
+    string queryTag = Context.Request.Query["tag"].ToString() ?? "";
+    List<string> arrayQueryTag = !string.IsNullOrWhiteSpace(queryTag) ? queryTag.Split(new char[] { ',' }).ToList() : new List<string>();
+
+    var sortCategory = !string.IsNullOrWhiteSpace(queryCategory) ? $"&category={queryCategory}" : "";
+    var sortTag = !string.IsNullOrWhiteSpace(queryTag) ? $"&tag={queryTag}" : "";
+
+    var sortlink = $"{sortCategory}{sortTag}";
+
+    var model = Model.Descendants<OBlogpost>();
+
+    if (!string.IsNullOrWhiteSpace(queryCategory))
+    {
+        model = model.Where(x => x.OCategories.ToLower() == queryCategory);
+    }
+
+    var listTag = model.SelectMany(x => x.OTags).Distinct().ToList();
+
+}
+
+<div class="blog-menu">
+    <div class="blog-menu-n-tag-container">
+        <div class="content-swipe">
+            <ul class="categories">
+                <li class="category-item @(queryCategory == "" ? "category-item--active" : "")">
+                    <a class="content-aside__menu-link @(queryCategory == "" ? "content-aside__menu-link--active" : "")" 
+                        href="@Model.Url()">
+                        @Umbraco.GetDictionaryValueOrDefault("BlogPost.All", "All")
+                    </a>
+                </li>
+                @foreach (OHeaderMenuItem category in Model.Ocategories.Select(item => item.Content))
+                {
+                    var currentPage = UmbracoContext.PublishedRequest.PublishedContent;
+                    var en_US_culture = "en-us";
+                    string link = "";
+                    if (currentPage.GetCultureFromDomains().ToLower() == en_US_culture)
+                    {
+                        link = queryCategory != category.OCaption.Trim().ToLower() ? $"?category={category.OCaption.ToLower()}" : "";
+                    }
+                    else
+                    {
+                        try
+                        {
+                            link = queryCategory != category.OLink.Name ? $"?category={category.OLink.Name}" : "";
+                        }
+                        catch (Exception e)
+                        {                            
+                            link = "";
+                        }
+                    }                    
+
+                    <li class="category-item @(link == "" ? "category-item--active" : "")">
+                        <a class="content-aside__menu-link @(link == "" ?  "content-aside__menu-link--active" : "")"
+                            href="@(Model.Url() + $"{link}")">
+                            @(category.OCaption)
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.OMenuSubtitle) && listTag.Any())
+        {                
+            <div>
+                <div>
+                    <div class="tag-button">
+                        <img src="~/Content/images/filter.svg" alt="filter_icon"/>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <hr id="filter-hr"/>
+    @if (!string.IsNullOrWhiteSpace(Model.OMenuSubtitle) && listTag.Any())
+    {        
+        <div class="content-aside__menu-tags">
+            @foreach (string item in listTag)
+            {
+                var activeLinkTag = arrayQueryTag.Contains(item);
+
+                List<string> tempArrayQueryTag = new List<string>(arrayQueryTag);
+
+                if (activeLinkTag)
+                {
+                    tempArrayQueryTag.Remove(item);
+                }
+                else
+                {
+                    tempArrayQueryTag.Add(item);
+                }
+
+                var link = tempArrayQueryTag.Any() ? $"tag={string.Join(",", tempArrayQueryTag)}" : "";
+
+                <a class="blogpost-tag @(activeLinkTag ? "blogpost-tag__active" : "") " href="@(Model.Url() + $"?{link}{sortCategory}")">@item</a>
+            }
+        </div>        
+        <div class="tag-button" style="display: none; margin-top: 20px;">
+            <img src="~/Content/images/close.svg" alt="close_svg"/>
+        </div>        
+    }   
+</div>

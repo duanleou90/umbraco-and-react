@@ -1,0 +1,19 @@
+﻿<div ng-controller="tableBlockController">
+    <section class="preview-section">
+        <section class="oski-mt-3 oski-mb-3">
+            <table ng-if="value" ng-style="getTableStyle()" class="table">
+                <tr ng-repeat="cellRow in value.cells">
+                    <td ng-repeat="cell in cellRow"
+                        ng-if="cell.scope !== 'col'"
+                        ng-bind-html="cell.value"
+                        ng-style="getCellStyle()"></td>
+
+                    <th ng-repeat="cell in cellRow"
+                        ng-if="cell.scope === 'col'"
+                        ng-bind-html="cell.value"
+                        ng-style="getHeaderCellStyle()"></th>
+                </tr>
+            </table>
+        </section>
+    </section>
+</div>

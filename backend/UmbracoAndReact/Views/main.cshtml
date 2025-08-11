@@ -1,0 +1,74 @@
+﻿@using System.Globalization
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+    Layout = null;
+    var model = (OHome)Model.Root();
+    var favicon = model.Favicon == null ? "/content/favicon.png" : model.Favicon.Url();
+    var pageIsFromRootContent = model.OContent?.Id == UmbracoContext.PublishedRequest.PublishedContent?.Id;
+    var hasQueryParams = !string.IsNullOrEmpty(Context.Request.QueryString.Value);
+    var metaTitle = Model?.GetProperty("oMetaTitle")?.GetValue()?.ToString();
+    var metaDescription = Model?.GetProperty("oMetaDescription")?.GetValue()?.ToString();
+
+    var cultureCode = UmbracoContext.PublishedRequest.PublishedContent;
+    string selectedLanguage = "en-US";
+    foreach (var (culture, infos) in cultureCode.Cultures)
+    {
+        if (cultureCode.GetCultureFromDomains().ToLower().Equals(culture))
+        {
+            selectedLanguage = new CultureInfo(culture).IetfLanguageTag;
+            continue;
+        }
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta-fields></meta-fields>
+    <render-script position="HeadBottom"></render-script>
+    <link rel="icon" type="image/png" href="@favicon" sizes="16x16">
+    <link rel="preload" as="font" href="/Oski-assets/fonts/Lato-Regular.ttf" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" as="font" href="/Oski-assets/fonts/Lato-Bold.ttf" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" as="font" href="/Oski-assets/fonts/Lato-Black.ttf" type="font/ttf" crossorigin="anonymous">
+    <environment include="Development">
+        <link rel="stylesheet" href="/Oski-assets/css/libs.min.css" type="text/css">
+        <link rel="stylesheet" href="/Oski-assets//css/jquery.fancybox.css" type="text/css" />
+        <link rel="stylesheet" href="~/Oski-assets/css/style.css" type="text/css">
+        <link rel="stylesheet" href="~/Oski-assets/css/glider.min.css" type="text/css">
+    </environment>
+    <!--
+        Default css style for block grid layout
+        <link rel="stylesheet" href="~/umbraco/assets/css/umbraco-blockgridlayout.css" type="text/css">
+    -->
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/bundles/style.min.css" type="text/css">
+    </environment>
+
+</head>
+<body>
+    <render-script position="BodyTop"></render-script>
+        <div class="wrapper">
+            @await Html.PartialAsync("oskiPartials/OHeader", model, new ViewDataDictionary(ViewData) { { "url", Model.Url() } })
+            @RenderBody()
+            @await Html.PartialAsync("oskiPartials/OFooterContainer", model)
+        </div>
+    <button id="to_top_button" title="Go to top">
+        <span></span>
+    </button>
+    <environment include="Development">
+        <script src="~/Oski-assets/Scripts/jquery-3.4.1.min.js"></script>
+        <script src="~/Oski-assets/Scripts/jquery.fancybox.js"></script>
+        <script src="~/Oski-assets/Scripts/glider.min.js"></script>
+        <script src="~/Oski-assets/Scripts/smoothscroll.min.js"></script>
+        <script src="~/Oski-assets/Scripts/slick.min.js"></script>
+        <script src="~/Oski-assets/Scripts/script.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/bundles/script.min.js"></script>
+    </environment>
+    <render-script position="BodyBottom"></render-script>
+</body>
+</html>

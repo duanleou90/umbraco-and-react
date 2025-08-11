@@ -1,0 +1,16 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@{
+    var content = (OFullBleed)Model.Content;
+    var textColor = content.OTextColor ?? "black";
+    var blogPaddingsClass = "blogpost-content";
+    var style = content.OBackgroundImage == null ?
+        $"background-color: {content.OBackgroundColor}; color: {textColor}; padding: 3% 15%; background: linear-gradient(to right, {content.OFromColor}, {content.OToColor});" :
+        $"background-image: url('{content.OBackgroundImage.Url()}'); padding: 3% 15%; background-repeat: no-repeat; background-size: cover; height: 100%;";
+    if (content.OIsTextCentered)
+    {
+        style += " text-align: center;";
+    }
+}
+<div class="full-bleed @(content.OIsBlogPaddings ? blogPaddingsClass : "")" style="@style" id="blockToHide">
+    @await  Html.GetBlockGridItemAreasHtmlAsync(Model)
+</div>

@@ -1,0 +1,14 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@{
+    var content = (OProfileWithNameAndText)Model.Content;
+}
+<div class="profile-with-name-and-text">
+    <div class="profile-with-name-and-text__photo" style="background-image: url('@(content.OPhoto != null ? content.OPhoto.Url() : "")'); @(string.IsNullOrWhiteSpace(content.OName) ? "margin-top:25px;" : "")"></div>
+    <div class="profile-with-name-and-text__right-part">
+        <div class="profile-with-name-and-text__info">
+            <div class="profile-with-name-and-text__name">@content.OName</div>
+            <div class="profile-with-name-and-text__position">@content.OPosition</div>
+            @Html.Raw(content.OText)
+        </div>
+    </div>
+</div>

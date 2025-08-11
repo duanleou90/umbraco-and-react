@@ -1,0 +1,18 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@{
+    var content = (OImagesGrid)Model.Content;
+}
+<div class="images-grid">
+    @foreach (var item in content.OImagesList)
+    {
+        var image = (OBlockImage)item.Content;
+        var altText = image.OImage.Name() ?? "Image of images list";
+        <!--
+            <div style="background-image: url(@(image.OImage != null ? image.OImage.Url() : "")); width: @(image.OWidth==0? "100px": $"{image.OWidth}px"); height: @(image.OHeight==0? "100px": $"{image.OHeight}px"); border-radius: @($"{image.OBorderRadius}px")"></div>
+        -->
+        <img 
+            src="@(image.OImage != null ? image.OImage.Url() : "")"
+            alt="@altText"
+            style="width: @(image.OWidth==0? "100px": $"{image.OWidth}px"); height: @(image.OHeight==0? "100px": $"{image.OHeight}px"); border-radius: @($"{image.OBorderRadius}px")" />
+    }
+</div>

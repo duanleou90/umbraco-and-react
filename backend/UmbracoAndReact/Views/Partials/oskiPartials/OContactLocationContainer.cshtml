@@ -1,0 +1,27 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<OContactLocationContainer>
+@inject IHostingEnvironment hostingEnvironment
+<section class="oski-pb-3 oski-pt-3">
+    <div class="contacts-page__information">
+        @{
+            OContactList contacts = Model.OContacts.Select(x => x.Content).Cast<OContactList>().FirstOrDefault();
+        }
+            @foreach (var item in contacts.OItems)
+            {
+                <p class="contacts-page__address">@item</p>
+            }
+        @foreach (Link link in contacts.OLinks.Cast<Link>())
+        {
+            var url = link?.OLink?.FirstOrDefault()?.Url ?? "#";
+            <a href="@url" class="contacts-page__link">@link.OTitle</a>
+        }
+        <div class="header__socials">
+            @foreach (SocialLink link in Model.OSocialLinks.Cast<SocialLink>())
+            {
+                var linkUrl = link?.OUrl.First()?.Url ?? "#";
+                <a href="@linkUrl" target="@(link?.OUrl.First().Target)" class="header__social">
+                    @Html.Raw(System.IO.File.ReadAllText(hostingEnvironment.ContentRootPath + "\\" + link.OIcon?.Url()))
+                </a>
+            }
+        </div>
+    </div>
+</section>

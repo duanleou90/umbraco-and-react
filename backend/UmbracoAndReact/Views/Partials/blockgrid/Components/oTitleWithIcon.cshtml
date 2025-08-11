@@ -1,0 +1,8 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@{
+    var content = (OTitleWithIcon)Model.Content;
+}
+<div class="industries">
+    <div class="industries__icon" style="background-image: url(@(content.OIcon != null ? content.OIcon.Url() : ""))"></div>
+    <h4 class="industries__title">@content.OTitle</h4>
+</div>

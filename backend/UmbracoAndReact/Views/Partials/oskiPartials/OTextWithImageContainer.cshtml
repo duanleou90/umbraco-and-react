@@ -1,0 +1,41 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<OTextWithImageContainer>
+@{
+    var listStyle = Model.OListItemsStyle switch
+    {
+        "hyphen" => "hyphen-style",
+        "dots" => "dot-style",
+        _ => ""
+    };
+}
+
+<section class="oski-mb-5 oski-mt-5">
+    <div class="text-with-image-container__inner"
+         style="flex-direction: row-reverse;
+                background-color: #@Model.OBackgroundColor;
+                border: 2px solid #fff;
+                box-shadow: 0 0 25px #e3ebfe;
+                border-radius: 25px;">
+        <div class="text-with-image-container__info">
+            <h3 class="text-with-image-container__info__title">
+                @Model.OTitle
+            </h3>
+            <div class="text-with-image-container__info__points oski-mb-1">
+                @foreach (var item in Model.OStrings)
+                {
+                    <div class="@listStyle">@item</div>
+                }
+            </div>
+            @if (Model.OButton != null)
+            {
+                <p class="new-team__slide-position oski-self-start">
+                    <a class="top__button"
+                       href="@Model.OButton?.Url">@Model.OButton?.Name</a>
+                </p>
+            
+            }
+        </div>
+        <div class="text-with-image-container__image">
+            <img src="@Model.OImage?.Url()" alt="@Model.OImage.Name() ?? Image under text"/>
+        </div>
+    </div>
+</section>
